@@ -1,14 +1,9 @@
 import * as S from "./styled";
-import { useEffect } from "react";
-import { api } from "../../servers/api";
+import { useContext } from "react";
+import { TransactionsContext } from "../hooks/useTransactions";
 
 export const TransactionsTable = () => {
-  useEffect(() => {
-    api
-      .get("/transactions")
-      .then((data) => console.log("o que veio do response", data))
-      .catch((_) => console.log(_));
-  }, []);
+  const { transactions } = useContext(TransactionsContext);
 
   return (
     <>
@@ -21,18 +16,23 @@ export const TransactionsTable = () => {
             <th>Data</th>
           </thead>
           <tbody>
-            <tr>
-              <td>Desenvolvimento de webSite</td>
-              <td className="deposit">R$12000</td>
-              <td>Desenvolvimento</td>
-              <td>20/02/2021</td>
-            </tr>
-            <tr>
-              <td>Aluguel</td>
-              <td className="withdraw"> - R$1100</td>
-              <td>Casa</td>
-              <td>17/02/2021</td>
-            </tr>
+            {transactions.map((item, index) => (
+              <tr key={item.id}>
+                <td>{item.title}</td>
+                <td className={item.type}>
+                  {new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  }).format(item.amount)}
+                </td>
+                <td>{item.category}</td>
+                <td>
+                  {new Intl.DateTimeFormat("pt-BR").format(
+                    new Date(item.amount)
+                  )}
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </S.Container>
